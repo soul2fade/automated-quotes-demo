@@ -32,4 +32,10 @@ describe('cannedQuotes', () => {
       expect(Math.abs(q.subtotal + q.tax - q.total)).toBeLessThan(1);
     }
   });
+
+  it('trade field on each quote matches its record key', () => {
+    for (const { id } of TRADES) {
+      expect(cannedQuotes[id].trade).toBe(id);
+    }
+  });
 });
