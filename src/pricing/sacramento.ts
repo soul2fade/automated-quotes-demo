@@ -1,3 +1,18 @@
+/**
+ * Sacramento MSA pricing reference data.
+ *
+ * Source date: 2026-05-04
+ * Sources: BLS California regional labor data, RSMeans regional indices,
+ *          local trade association posts.
+ *
+ * Review cadence: re-check labor rates annually, sales tax on any CA/county
+ * rate change, and material prices opportunistically. These values do not
+ * need to be perfect — they exist to give the LLM a defensible regional
+ * anchor when generating quotes.
+ *
+ * `markup` is the multiplier applied on top of wholesale `unitPrice` to reach
+ * the customer-facing price (e.g., markup: 0.4 → customer price = unitPrice * 1.4).
+ */
 import type { Trade } from '../types';
 
 export interface TradePricing {
