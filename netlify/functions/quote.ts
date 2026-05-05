@@ -43,23 +43,29 @@ export default async (req: Request, _context: Context): Promise<Response> => {
   const stream = new ReadableStream({
     async start(controller) {
       const encoder = new TextEncoder();
+      let hasStreamed = false;
       try {
         const response = await client.messages.stream({
           model: MODEL,
           max_tokens: MAX_TOKENS,
           system: systemPrompt,
-          messages: [{ role: 'user', content: `Trade: ${trade}. Job description: ${description}` }],
+          messages: [{ role: 'user', content: `<job_description>${description}</job_description>\n\nGenerate a quote for the above ${trade} job.` }],
         }, { signal: req.signal });
 
         for await (const event of response) {
           if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
             controller.enqueue(encoder.encode(event.delta.text));
+            hasStreamed = true;
           }
         }
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Unknown error';
         console.error('Anthropic call failed:', message);
-        controller.enqueue(encoder.encode(JSON.stringify({ error: GENERIC_ERROR_MESSAGE })));
+        if (!hasStreamed) {
+          controller.enqueue(encoder.encode(JSON.stringify({ error: GENERIC_ERROR_MESSAGE })));
+        } else {
+          controller.error(err);
+        }
       } finally {
         controller.close();
       }
