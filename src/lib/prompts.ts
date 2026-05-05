@@ -44,6 +44,7 @@ Regional notes: ${pricing.regionalNotes}
 OUTPUT FORMAT (strict):
 
 Respond with a single JSON object matching this schema, with no prose before or after:
+Do NOT wrap your response in markdown code fences (no \`\`\`json, no \`\`\`). Start with { and end with } — nothing else, no prose, no fences.
 
 {
   "summary": "1-2 paragraph professional rephrasing of the job",

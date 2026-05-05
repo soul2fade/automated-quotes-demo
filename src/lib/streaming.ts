@@ -5,8 +5,16 @@ type PartialQuote = Partial<Quote> & { error?: string };
 
 export function parsePartialQuote(text: string): PartialQuote | null {
   if (!text.trim()) return null;
+  let cleaned = text.trim();
+  if (cleaned.startsWith('```')) {
+    // Strip opening fence with optional language tag (```json, ```)
+    cleaned = cleaned.replace(/^```(?:json)?\s*\n?/, '');
+    // Strip trailing fence if present
+    cleaned = cleaned.replace(/\n?```\s*$/, '');
+  }
+  if (!cleaned.trim()) return null;
   try {
-    const obj = parse(text, Allow.ALL);
+    const obj = parse(cleaned, Allow.ALL);
     if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
       return obj as PartialQuote;
     }

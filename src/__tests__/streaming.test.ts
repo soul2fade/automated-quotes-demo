@@ -23,4 +23,22 @@ describe('parsePartialQuote', () => {
   it('returns null on unrecoverable garbage', () => {
     expect(parsePartialQuote('}}}}}}')).toBeNull();
   });
+
+  it('strips ```json code fences before parsing', () => {
+    const fenced = '```json\n{"summary": "hello", "lineItems": []}\n```';
+    const result = parsePartialQuote(fenced);
+    expect(result?.summary).toBe('hello');
+  });
+
+  it('strips bare ``` code fences before parsing', () => {
+    const fenced = '```\n{"summary": "hello"}\n```';
+    const result = parsePartialQuote(fenced);
+    expect(result?.summary).toBe('hello');
+  });
+
+  it('handles partial input that starts with an open fence and incomplete JSON', () => {
+    const partial = '```json\n{"summary": "hel';
+    const result = parsePartialQuote(partial);
+    expect(result?.summary).toBe('hel');
+  });
 });
