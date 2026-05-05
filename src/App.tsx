@@ -33,8 +33,13 @@ export default function App() {
     setQuote({ ...cannedQuotes[trade], lineItems: [], summary: '', subtotal: undefined, tax: undefined, total: undefined });
 
     try {
+      let lastPartial: { error?: string; summary?: string; lineItems?: unknown } | null = null;
       for await (const partial of streamQuote(trade, description, ctrl.signal)) {
-        if (partial.error) throw new Error(partial.error);
+        lastPartial = partial;
+        if (partial.error && !partial.summary && !partial.lineItems) {
+          // model is in error path — don't render, wait for full message before throwing
+          continue;
+        }
         setQuote((prev) => ({
           ...cannedQuotes[trade],
           ...prev,
@@ -42,6 +47,7 @@ export default function App() {
           contractor: cannedQuotes[trade].contractor,
         }));
       }
+      if (lastPartial?.error) throw new Error(lastPartial.error);
     } catch (err) {
       if ((err as Error).name === 'AbortError') return;
       console.error(err);
