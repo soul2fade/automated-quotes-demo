@@ -4,6 +4,10 @@ import { buildSystemPrompt } from '../../src/lib/prompts';
 import type { Trade } from '../../src/types';
 
 const VALID_TRADES: Trade[] = ['hvac', 'plumbing', 'electrical', 'roofing'];
+const MODEL = 'claude-haiku-4-5-20251001';
+const MAX_TOKENS = 4000;
+const MAX_DESCRIPTION_CHARS = 4000;
+const GENERIC_ERROR_MESSAGE = 'Failed to generate quote. Please try again.';
 
 export default async (req: Request, _context: Context): Promise<Response> => {
   if (req.method !== 'POST') {
@@ -18,11 +22,14 @@ export default async (req: Request, _context: Context): Promise<Response> => {
   }
 
   const { trade, description } = body;
-  if (!trade || !description || !VALID_TRADES.includes(trade as Trade)) {
-    return new Response(JSON.stringify({ error: 'Bad request: trade and description required' }), { status: 400 });
+  if (!trade || !VALID_TRADES.includes(trade as Trade)) {
+    return new Response(JSON.stringify({ error: 'Bad request: invalid or missing trade' }), { status: 400 });
   }
-  if (description.length > 4000) {
-    return new Response(JSON.stringify({ error: 'Description too long (max 4000 chars)' }), { status: 400 });
+  if (!description) {
+    return new Response(JSON.stringify({ error: 'Bad request: description required' }), { status: 400 });
+  }
+  if (description.length > MAX_DESCRIPTION_CHARS) {
+    return new Response(JSON.stringify({ error: `Description too long (max ${MAX_DESCRIPTION_CHARS} chars)` }), { status: 400 });
   }
 
   const apiKey = Netlify.env.get('ANTHROPIC_API_KEY');
@@ -38,11 +45,11 @@ export default async (req: Request, _context: Context): Promise<Response> => {
       const encoder = new TextEncoder();
       try {
         const response = await client.messages.stream({
-          model: 'claude-haiku-4-5-20251001',
-          max_tokens: 4000,
+          model: MODEL,
+          max_tokens: MAX_TOKENS,
           system: systemPrompt,
           messages: [{ role: 'user', content: `Trade: ${trade}. Job description: ${description}` }],
-        });
+        }, { signal: req.signal });
 
         for await (const event of response) {
           if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
@@ -52,7 +59,7 @@ export default async (req: Request, _context: Context): Promise<Response> => {
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Unknown error';
         console.error('Anthropic call failed:', message);
-        controller.enqueue(encoder.encode(JSON.stringify({ error: message })));
+        controller.enqueue(encoder.encode(JSON.stringify({ error: GENERIC_ERROR_MESSAGE })));
       } finally {
         controller.close();
       }
