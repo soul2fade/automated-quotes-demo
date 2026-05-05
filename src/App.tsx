@@ -6,6 +6,7 @@ import { QuoteDocument } from './components/QuoteDocument';
 import { PrintButton } from './components/PrintButton';
 import { CtaBanner } from './components/CtaBanner';
 import { Toast } from './components/Toast';
+import { ConvertToInvoiceLink } from './components/ConvertToInvoiceLink';
 import { cannedQuotes } from './data/canned-quotes';
 import type { Quote, Trade } from './types';
 import { streamQuote } from './lib/streaming';
@@ -75,7 +76,8 @@ export default function App() {
 
         <JobInput trade={trade} onGenerate={generate} isGenerating={isGenerating} />
 
-        <div className="flex justify-end max-w-4xl mx-auto px-2 no-print">
+        <div className="flex justify-end items-center gap-4 max-w-4xl mx-auto px-2 no-print">
+          <ConvertToInvoiceLink quote={quote} disabled={isGenerating} />
           <PrintButton />
         </div>
 
