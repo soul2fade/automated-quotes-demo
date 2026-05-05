@@ -1,6 +1,6 @@
 import type { Quote } from '../types';
 
-const INVOICE_TOOL_URL = 'https://invoicedemo.netlify.app/';
+const INVOICE_TOOL_URL = 'https://automatedinvoicedemo.netlify.app/';
 
 // DUPLICATE: must stay byte-identical to encodeQuote in
 // automated-invoice-demo/src/lib/encoding.ts. The invoice tool
