@@ -7,7 +7,7 @@ interface Props {
 
 export function TradeToggle({ selected, onChange }: Props) {
   return (
-    <div className="inline-flex rounded-xl bg-slate-100 p-1 no-print" role="tablist">
+    <div className="inline-flex rounded-xl bg-slate-100 p-1 no-print">
       {TRADES.map(({ id, label }) => {
         const active = id === selected;
         return (
