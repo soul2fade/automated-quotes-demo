@@ -125,7 +125,7 @@ function LineItemsTable({ label, items }: { label: string; items: Quote['lineIte
             <th className="pb-1 font-medium text-right w-16">Qty</th>
             <th className="pb-1 font-medium text-right w-16">Unit</th>
             <th className="pb-1 font-medium text-right w-24">Rate</th>
-            <th className="pb-1 font-medium text-right w-24">Amount</th>
+            <th className="pb-1 font-medium text-right w-24">Total</th>
           </tr>
         </thead>
         <tbody>

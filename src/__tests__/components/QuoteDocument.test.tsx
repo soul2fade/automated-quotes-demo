@@ -20,8 +20,7 @@ describe('QuoteDocument', () => {
     render(<QuoteDocument quote={cannedQuotes.hvac} />);
     expect(screen.getByText(/Subtotal/i)).toBeInTheDocument();
     expect(screen.getByText(/Tax/i)).toBeInTheDocument();
-    // "Total" also matches "Subtotal", so use getAllByText and assert at least one match
-    expect(screen.getAllByText(/Total/i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText(/^Total$/).length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders summary text', () => {
