@@ -2,6 +2,10 @@ import type { Quote } from '../types';
 
 const INVOICE_TOOL_URL = 'https://invoicedemo.netlify.app/';
 
+// DUPLICATE: must stay byte-identical to encodeQuote in
+// automated-invoice-demo/src/lib/encoding.ts. The invoice tool
+// decodes the URL fragment with the inverse transform — any change
+// here breaks the convert-to-invoice hand-off.
 function encodeQuote(quote: Partial<Quote>): string {
   const json = JSON.stringify(quote);
   return btoa(unescape(encodeURIComponent(json)))
