@@ -3,11 +3,13 @@ import type { Quote } from '../types';
 const fmtCurrency = (n: number) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
 
-const fmtDate = (iso: string) =>
-  new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+const fmtDate = (iso: string) => {
+  const d = new Date(iso);
+  return isNaN(d.getTime()) ? iso : d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+};
 
 interface Props {
-  quote: Partial<Quote> & { trade?: string };
+  quote: Partial<Quote>;
 }
 
 export function QuoteDocument({ quote }: Props) {
